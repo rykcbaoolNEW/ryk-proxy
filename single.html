@@ -4,9 +4,9 @@
   <title>Blank Browser</title>
   <script>
     function injectControl() {
-      const control = frames.control.document;
-      control.open();
-      control.write(`
+      const d = frames.control.document;
+      d.open();
+      d.write(`
 <!DOCTYPE html>
 <html>
 <head>
@@ -34,8 +34,11 @@ button{margin-left:6px;background:#333;color:#fff;border:none;padding:6px 10px;c
 <div id="footer">Blank Browser • by <b>ryk_cool</b></div>
 
 <script>
-let tabs=[];
-let active=-1;
+let tabList = [];
+let active = -1;
+
+const urlInput = document.getElementById("url");
+const tabsDiv = document.getElementById("tabs");
 
 function loadURL(url){
   if(!url.startsWith("http")) url="https://"+url;
@@ -43,37 +46,34 @@ function loadURL(url){
 }
 
 function go(){
-  loadURL(url.value);
-  if(active!==-1) tabs[active]=url.value;
+  loadURL(urlInput.value);
+  if(active !== -1) tabList[active] = urlInput.value;
 }
 
 function newTab(u="about:blank"){
-  tabs.push(u);
-  active=tabs.length-1;
+  tabList.push(u);
+  active = tabList.length - 1;
   render();
   loadURL(u);
 }
 
 function switchTab(i){
-  active=i;
-  url.value=tabs[i];
-  loadURL(tabs[i]);
+  active = i;
+  urlInput.value = tabList[i];
+  loadURL(tabList[i]);
   render();
 }
 
 function render(){
-  tabs.innerHTML="";
-  tabs.forEach((u,i)=>{
-    let d=document.createElement("div");
-    d.className="tab"+(i===active?" active":"");
-    d.textContent="Tab "+(i+1);
-    d.onclick=()=>switchTab(i);
-    tabs.appendChild(d);
+  tabsDiv.innerHTML = "";
+  tabList.forEach((u,i)=>{
+    const d = document.createElement("div");
+    d.className = "tab" + (i===active ? " active" : "");
+    d.textContent = "Tab " + (i+1);
+    d.onclick = () => switchTab(i);
+    tabsDiv.appendChild(d);
   });
 }
-
-const url=document.getElementById("url");
-const tabs=document.getElementById("tabs");
 
 newTab("https://example.com");
 <\/script>
@@ -81,15 +81,16 @@ newTab("https://example.com");
 </body>
 </html>
       `);
-      control.close();
+      d.close();
     }
   </script>
 </head>
 
-<frameset rows="80,*" onload="injectControl()" frameborder="0">
-  <frame name="control" src="about:blank" noresize scrolling="no">
+<frameset rows="80,*" frameborder="0" onload="injectControl()">
+  <frame name="control" src="about:blank" scrolling="no" noresize>
   <frame name="viewer" src="about:blank" noresize>
 </frameset>
 
 <noframes>Created by ryk_cool</noframes>
 </html>
+
