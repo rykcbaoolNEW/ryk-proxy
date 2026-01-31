@@ -2,16 +2,11 @@
 <html>
 <head>
   <title>Blank Browser</title>
-</head>
-
-<frameset rows="80,*" frameborder="0" border="0">
-
-  <!-- CONTROL FRAME (INLINE, SAFE) -->
-  <frame
-    name="control"
-    scrolling="no"
-    noresize
-    src='data:text/html;charset=utf-8,
+  <script>
+    function injectControl() {
+      const control = frames.control.document;
+      control.open();
+      control.write(`
 <!DOCTYPE html>
 <html>
 <head>
@@ -67,31 +62,34 @@ function switchTab(i){
 }
 
 function render(){
-  tabsDiv.innerHTML="";
+  tabs.innerHTML="";
   tabs.forEach((u,i)=>{
     let d=document.createElement("div");
     d.className="tab"+(i===active?" active":"");
     d.textContent="Tab "+(i+1);
     d.onclick=()=>switchTab(i);
-    tabsDiv.appendChild(d);
+    tabs.appendChild(d);
   });
 }
 
 const url=document.getElementById("url");
-const tabsDiv=document.getElementById("tabs");
+const tabs=document.getElementById("tabs");
 
 newTab("https://example.com");
-</script>
+<\/script>
 
 </body>
-</html>'
-  >
+</html>
+      `);
+      control.close();
+    }
+  </script>
+</head>
 
-  <!-- VIEWER -->
-  <frame name="viewer" src="about:blank"></frame>
-
+<frameset rows="80,*" onload="injectControl()" frameborder="0">
+  <frame name="control" src="about:blank" noresize scrolling="no">
+  <frame name="viewer" src="about:blank" noresize>
 </frameset>
 
 <noframes>Created by ryk_cool</noframes>
 </html>
-
